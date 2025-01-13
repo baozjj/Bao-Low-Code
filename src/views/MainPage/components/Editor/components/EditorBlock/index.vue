@@ -16,12 +16,18 @@ const blockStyles = computed(() => {
 })
 
 const config = inject('config')
-console.log('config', config)
+
+// 获取组件
+const componentToRender = computed(() => {
+  return config?.componentMap[props.block.key].render();
+});
+
+console.log('componentToRender', componentToRender.value)
 </script>
 
 <template>
     <div class="editor-block" :style="blockStyles">
-        {{block}}
+        <component :is="componentToRender" :block="props.block" />
     </div>
 </template>
 
