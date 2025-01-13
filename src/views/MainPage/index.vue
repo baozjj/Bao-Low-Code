@@ -7,5 +7,5 @@ const state = ref(data)
 </script>
 
 <template>
-    <Editor :data="state"/>
+    <Editor v-model="state"/>
 </template>

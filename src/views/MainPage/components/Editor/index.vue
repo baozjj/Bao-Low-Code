@@ -1,9 +1,24 @@
 <script setup lang="ts">
-import {defineProps} from 'vue'
+import {defineProps, computed, withDefaults, defineModel} from 'vue'
 import type { IEditorProps } from './service/interface';
-withDefaults(defineProps<IEditorProps>(), {
-  data: '' 
+import EditorBlock from './components/EditorBlock/index.vue'
+const props = withDefaults(defineProps<IEditorProps>(), {
+  modelValue: '' 
 });
+const model = defineModel()
+
+const data = computed(() => {
+  return model.value
+})
+
+const containerStyles = computed(() => {
+  return {
+    width: data.value.container.width + 'px',
+    height: data.value.container.height + 'px',
+  }
+})
+
+console.log('containerStyles', containerStyles.value)
 </script>
 
 <template>
@@ -15,8 +30,10 @@ withDefaults(defineProps<IEditorProps>(), {
         <!-- 负责产生滚动条 -->
         <div class="editor-container-canvas">
           <!-- 产生内容区 -->
-           <div class="editor-container-canvas-content">
-              内容区
+           <div class="editor-container-canvas-content" :style="containerStyles">
+              <div v-for="item in data.blocks" :key="item.id">
+                <EditorBlock :block="item"/>
+              </div>
            </div>
         </div>
       </div>
@@ -66,6 +83,7 @@ withDefaults(defineProps<IEditorProps>(), {
           width: 1000px;
           height: 1000px;
           background-color: green;
+          position: relative;
         }
 
       }
