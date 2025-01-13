@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { withDefaults, defineProps, computed } from "vue";
+import { withDefaults, defineProps, computed, inject } from "vue";
 
 const props = withDefaults(defineProps<{
     block: Object
@@ -14,6 +14,9 @@ const blockStyles = computed(() => {
         zIndex: `${props.block.zIndex}px`,
     }
 })
+
+const config = inject('config')
+console.log('config', config)
 </script>
 
 <template>
