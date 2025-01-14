@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {defineProps, computed, withDefaults, defineModel} from 'vue'
+import {defineProps, computed, withDefaults, defineModel, inject} from 'vue'
 import type { IEditorProps } from './service/interface';
 import EditorBlock from './components/EditorBlock/index.vue'
 const props = withDefaults(defineProps<IEditorProps>(), {
@@ -19,11 +19,23 @@ const containerStyles = computed(() => {
 })
 
 console.log('containerStyles', containerStyles.value)
+
+const config = inject('config')
+
+const componentList = computed(() => {
+  return config.componentList
+})
 </script>
 
 <template>
     <div class="editor">
-      <div class="editor-left">左侧物料区</div>
+      <div class="editor-left">
+        <div class="editor-left-item" v-for="item in componentList" :key="item.key">
+          <!-- 更具注册列表 渲染对于的内容 -->
+          <span>{{ item.label }}</span>
+          <component :is="item.preview()"/>
+        </div>
+      </div>
       <div class="editor-top">菜单栏</div>
       <div class="editor-right">属性控制栏</div>
       <div class="editor-container">
@@ -56,6 +68,41 @@ console.log('containerStyles', containerStyles.value)
 
   .editor-left {
     left: 0;
+    
+    .editor-left-item {
+      width: 250px;
+      margin: 20px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+      cursor: move;
+      user-select: none;
+      min-height: 100px;
+      position: relative;
+
+      span {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: blue;
+        color: #fff;
+        padding: 4px
+      }
+    }
+
+    .editor-left-item::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #ccc;
+        opacity: 0.2;
+      }
   }
 
   .editor-right {
