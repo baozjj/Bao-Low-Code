@@ -56,7 +56,8 @@ const drop = (e) => {
       top: e.offsetY,
       left: e.offsetX,
       zIndex: 1,
-      key: currentComponent.key
+      key: currentComponent.key,
+      alignCenter: true  // 松手的时候居中
     }
   ]}
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { withDefaults, defineProps, computed, inject } from "vue";
+import { withDefaults, defineProps, computed, inject, onMounted, ref} from "vue";
 
 const props = withDefaults(defineProps<{
     block: Object
@@ -22,10 +22,22 @@ const componentToRender = computed(() => {
   return config?.componentMap[props.block.key].render();
 });
 
+const blockRef = ref(null)
+
+onMounted(() => {
+    console.log(blockRef.value)
+    let { offsetWidth, offsetHeight } = blockRef.value
+    if(props.block.alignCenter) {
+        // 松手居中显示
+        props.block.left = props.block.left - (offsetWidth / 2)
+        props.block.top = props.block.top - (offsetHeight / 2)
+        props.block.alignCenter = false 
+    }
+})
 </script>
 
 <template>
-    <div class="editor-block" :style="blockStyles">
+    <div class="editor-block" :style="blockStyles" ref="blockRef">
         <component :is="componentToRender" :block="props.block" />
     </div>
 </template>
