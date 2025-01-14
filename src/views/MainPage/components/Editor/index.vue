@@ -72,6 +72,13 @@ const dragStart = (e, component) => {
   containerRef.value.addEventListener('drop', drop)
   currentComponent = component
 }
+
+const dragend = (e) => {
+  containerRef.value.removeEventListener('dragenter', dragenter)
+  containerRef.value.removeEventListener('dragover', dragover)
+  containerRef.value.removeEventListener('dragleave', dragleave)
+  containerRef.value.removeEventListener('drop', drop)
+}
 </script>
 
 <template>
@@ -83,6 +90,7 @@ const dragStart = (e, component) => {
                 :key="item.key"
                 :draggable="true"
                 :onDragstart="e => dragStart(e, item)"
+                :onDragend="dragend"
             >
                 <!-- 更具注册列表 渲染对于的内容 -->
                 <span>{{ item.label }}</span>
