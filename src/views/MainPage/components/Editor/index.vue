@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import {defineProps, computed, withDefaults, defineModel, inject, ref} from 'vue'
-import type { IEditorProps } from './service/interface'
+import type {IEditorProps} from './service/interface'
+import {useMenuDragger} from './service/useMenuDragger'
 import deepcopy from 'deepcopy'
 import EditorBlock from './components/EditorBlock/index.vue'
+
 const props = withDefaults(defineProps<IEditorProps>(), {
-  modelValue: '' 
+  modelValue: ''
 });
 const model = defineModel()
 
@@ -32,99 +34,40 @@ const componentList = computed(() => {
 
 const containerRef = ref()
 
-let currentComponent = null
-
-const dragenter = (e) => {
-  e.dataTransfer.dropEffect = 'move' // h5 拖动图标
-}
-
-const dragover = (e) => {
-  e.preventDefault()
-}
-
-const dragleave = (e) => {
-  e.dataTransfer.dropEffect = 'none'
-}
-
-const drop = (e) => {
-  console.log(currentComponent)
-
-  let { blocks } = data.value
-  data.value = {...data.value, blocks: [
-    ...blocks,
-    {
-      top: e.offsetY,
-      left: e.offsetX,
-      zIndex: 1,
-      key: currentComponent.key,
-      alignCenter: true  // 松手的时候居中
-    }
-  ]}
-
-  currentComponent = null
-
-}
-
-const dragStart = (e, component) => {
-  containerRef.value.addEventListener('dragenter', dragenter)
-  containerRef.value.addEventListener('dragover', dragover)
-  containerRef.value.addEventListener('dragleave', dragleave)
-  containerRef.value.addEventListener('drop', drop)
-  currentComponent = component
-}
-
-const dragend = (e) => {
-  containerRef.value.removeEventListener('dragenter', dragenter)
-  containerRef.value.removeEventListener('dragover', dragover)
-  containerRef.value.removeEventListener('dragleave', dragleave)
-  containerRef.value.removeEventListener('drop', drop)
-}
+const {dragstart, dragend} = useMenuDragger(containerRef, data)
 </script>
 
 <template>
-    <div class="editor">
-        <div class="editor-left">
-            <div
-                class="editor-left-item"
-                v-for="item in componentList"
-                :key="item.key"
-                :draggable="true"
-                :onDragstart="e => dragStart(e, item)"
-                :onDragend="dragend"
-            >
-                <!-- 更具注册列表 渲染对于的内容 -->
-                <span>{{ item.label }}</span>
-                <component :is="item.preview()" />
-            </div>
-        </div>
-        <div class="editor-top">菜单栏</div>
-        <div class="editor-right">属性控制栏</div>
-        <div class="editor-container">
-            <!-- 负责产生滚动条 -->
-            <div class="editor-container-canvas">
-                <!-- 产生内容区 -->
-                <div
-                    class="editor-container-canvas-content"
-                    :style="containerStyles"
-                    ref="containerRef"
-                >
-                    <div
-                        v-for="item in data.blocks"
-                        :key="item.id"
-                    >
-                        <EditorBlock :block="item" />
-                    </div>
-                </div>
-            </div>
-        </div>
-
+  <div class="editor">
+    <div class="editor-left">
+      <div class="editor-left-item" v-for="item in componentList" :key="item.key" :draggable="true"
+        :onDragstart="e => dragstart(e, item)" :onDragend="dragend">
+        <!-- 更具注册列表 渲染对于的内容 -->
+        <span>{{ item.label }}</span>
+        <component :is="item.preview()" />
+      </div>
     </div>
+    <div class="editor-top">菜单栏</div>
+    <div class="editor-right">属性控制栏</div>
+    <div class="editor-container">
+      <!-- 负责产生滚动条 -->
+      <div class="editor-container-canvas">
+        <!-- 产生内容区 -->
+        <div class="editor-container-canvas-content" :style="containerStyles" ref="containerRef">
+          <div v-for="item in data.blocks" :key="item.id">
+            <EditorBlock :block="item" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </template>
 <style lang="less" scoped>
 .editor {
   width: 100%;
   height: 100%;
-  
+
   .editor-left,
   .editor-right {
     position: absolute;
@@ -136,7 +79,7 @@ const dragend = (e) => {
 
   .editor-left {
     left: 0;
-    
+
     .editor-left-item {
       width: 250px;
       margin: 20px auto;
@@ -162,15 +105,15 @@ const dragend = (e) => {
     }
 
     .editor-left-item::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: #ccc;
-        opacity: 0.2;
-      }
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #ccc;
+      opacity: 0.2;
+    }
   }
 
   .editor-right {
@@ -189,21 +132,21 @@ const dragend = (e) => {
     padding: 80px 270px;
     height: 100%;
     box-sizing: border-box;
-      .editor-container-canvas {
-        overflow: scroll;
-        height: 100%;
 
-        .editor-container-canvas-content {
-          margin: 20px auto;
-          width: 1000px;
-          height: 1000px;
-          background-color: green;
-          position: relative;
-        }
+    .editor-container-canvas {
+      overflow: scroll;
+      height: 100%;
 
+      .editor-container-canvas-content {
+        margin: 20px auto;
+        width: 1000px;
+        height: 1000px;
+        background-color: green;
+        position: relative;
       }
+
+    }
   }
 
 }
-
 </style>
