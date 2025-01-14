@@ -22,7 +22,6 @@ const componentToRender = computed(() => {
   return config?.componentMap[props.block.key].render();
 });
 
-console.log('componentToRender', componentToRender.value)
 </script>
 
 <template>
