@@ -1,47 +1,74 @@
 <script setup lang="ts">
-import {defineProps, computed, withDefaults, defineModel, inject, ref} from 'vue'
-import type {IEditorProps} from './service/interface'
-import {useMenuDragger} from './service/useMenuDragger'
-import deepcopy from 'deepcopy'
-import EditorBlock from './components/EditorBlock/index.vue'
+import {
+  defineProps,
+  computed,
+  withDefaults,
+  defineModel,
+  inject,
+  ref,
+} from "vue";
+import type { IEditorProps } from "./service/interface";
+import { useMenuDragger } from "./service/useMenuDragger";
+import { useFocus } from "./service/useFocus";
+import deepcopy from "deepcopy";
+import EditorBlock from "./components/EditorBlock/index.vue";
 
 const props = withDefaults(defineProps<IEditorProps>(), {
-  modelValue: ''
+  modelValue: "",
 });
-const model = defineModel()
+const model = defineModel();
 
 const data = computed({
   get() {
-    return model.value
+    return model.value;
   },
   set(newValue) {
-    model.value = deepcopy(newValue)
-  }
-})
+    model.value = deepcopy(newValue);
+  },
+});
 
 const containerStyles = computed(() => {
   return {
-    width: data.value.container.width + 'px',
-    height: data.value.container.height + 'px',
-  }
-})
+    width: data.value.container.width + "px",
+    height: data.value.container.height + "px",
+  };
+});
 
-const config = inject('config')
+const config = inject("config");
 
 const componentList = computed(() => {
-  return config.componentList
-})
+  return config.componentList;
+});
 
-const containerRef = ref()
+const containerRef = ref();
 
-const {dragstart, dragend} = useMenuDragger(containerRef, data)
+// 实现菜单的拖拽功能
+const { dragstart, dragend } = useMenuDragger(containerRef, data);
+
+// 实现获取焦点
+
+// 实现拖拽多个元素
+
+const {blockMousedown, clearBlockFocus, focusData} = useFocus(data)
+
+
+const containerMousedown = () => {
+    clearBlockFocus(); // 点击容器让选中的失去焦点
+  };
+
 </script>
 
 <template>
   <div class="editor">
     <div class="editor-left">
-      <div class="editor-left-item" v-for="item in componentList" :key="item.key" :draggable="true"
-        :onDragstart="e => dragstart(e, item)" :onDragend="dragend">
+      <div
+        class="editor-left-item"
+        v-for="item in componentList"
+        :key="item.key"
+        :draggable="true"
+        :onDragstart="(e) => dragstart(e, item)"
+        :onDragend="dragend"
+      >
         <!-- 更具注册列表 渲染对于的内容 -->
         <span>{{ item.label }}</span>
         <component :is="item.preview()" />
@@ -53,14 +80,23 @@ const {dragstart, dragend} = useMenuDragger(containerRef, data)
       <!-- 负责产生滚动条 -->
       <div class="editor-container-canvas">
         <!-- 产生内容区 -->
-        <div class="editor-container-canvas-content" :style="containerStyles" ref="containerRef">
+        <div
+          class="editor-container-canvas-content"
+          :style="containerStyles"
+          ref="containerRef"
+          :onMousedown="containerMousedown"
+        >
           <div v-for="item in data.blocks" :key="item.id">
-            <EditorBlock :block="item" />
+            <EditorBlock
+              :class="item.focus ? 'editor-block-focus' : ''"
+              class="editor-block"
+              :onMousedown="(e) => blockMousedown(e, item)"
+              :block="item"
+            />
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 <style lang="less" scoped>
@@ -100,12 +136,12 @@ const {dragstart, dragend} = useMenuDragger(containerRef, data)
         left: 0;
         background: blue;
         color: #fff;
-        padding: 4px
+        padding: 4px;
       }
     }
 
     .editor-left-item::after {
-      content: '';
+      content: "";
       position: absolute;
       top: 0;
       left: 0;
@@ -143,10 +179,21 @@ const {dragstart, dragend} = useMenuDragger(containerRef, data)
         height: 1000px;
         background-color: green;
         position: relative;
-      }
 
+        .editor-block::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+        }
+
+        .editor-block-focus {
+          border: 1px solid red;
+        }
+      }
     }
   }
-
 }
 </style>
