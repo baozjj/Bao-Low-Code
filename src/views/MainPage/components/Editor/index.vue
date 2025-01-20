@@ -10,6 +10,7 @@ import {
 import type { IEditorProps } from "./service/interface";
 import { useMenuDragger } from "./service/useMenuDragger";
 import { useFocus } from "./service/useFocus";
+import { useBlockDragger } from "./service/useBlockDragger";
 import deepcopy from "deepcopy";
 import EditorBlock from "./components/EditorBlock/index.vue";
 
@@ -46,16 +47,19 @@ const containerRef = ref();
 const { dragstart, dragend } = useMenuDragger(containerRef, data);
 
 // 实现获取焦点
+const { blockMousedown, clearBlockFocus, focusData } = useFocus(data, (e) => {
+  console.log(focusData.value.focus);
+  mousedown(e);
+});
+
+// 实现组件拖拽
+const { mousedown } = useBlockDragger(focusData);
 
 // 实现拖拽多个元素
 
-const {blockMousedown, clearBlockFocus, focusData} = useFocus(data)
-
-
 const containerMousedown = () => {
-    clearBlockFocus(); // 点击容器让选中的失去焦点
-  };
-
+  clearBlockFocus(); // 点击容器让选中的失去焦点
+};
 </script>
 
 <template>

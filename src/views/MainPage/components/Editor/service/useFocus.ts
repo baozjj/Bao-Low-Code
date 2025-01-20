@@ -1,7 +1,7 @@
 
 import { computed } from 'vue';
 
-export const useFocus = (data) => {
+export const useFocus = (data, callback) => {
   const focusData = computed(() => {
     let focus = [];
     let unfocused = [];
@@ -36,6 +36,7 @@ export const useFocus = (data) => {
         block.focus = false;
       }
     }
+    callback(e)
   };
 
   return {
