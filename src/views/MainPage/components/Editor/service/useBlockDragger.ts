@@ -1,6 +1,6 @@
 import { reactive } from "vue";
 
-export const useBlockDragger = (focusData, lastSelectBlock) => {
+export const useBlockDragger = (focusData, lastSelectBlock, data) => {
   let dragState = {
     startX: 0,
     startY: 0,
@@ -64,6 +64,8 @@ export const useBlockDragger = (focusData, lastSelectBlock) => {
     // 移除事件监听器，结束拖动
     document.removeEventListener("mousemove", mousemove);
     document.removeEventListener("mouseup", mouseup);
+    markLine.x = null;
+    markLine.y = null;
   };
 
   const mousedown = (e) => {
@@ -79,7 +81,12 @@ export const useBlockDragger = (focusData, lastSelectBlock) => {
         const { unfocused } = focusData.value; // 获取未选中的块
         let lines = { x: [], y: [] };
 
-        unfocused.forEach((block) => {
+        [...unfocused,{
+          top: 0,
+          left: 0,
+          width: data.value.container.width,
+          height: data.value.container.height,
+        }].forEach((block) => {
           const {
             top: ATop,
             left: ALeft,
