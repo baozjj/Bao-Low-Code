@@ -112,7 +112,7 @@ const containerMousedown = () => {
   .editor-right {
     position: absolute;
     width: 270px;
-    background-color: red;
+    background-color: #ccc;
     top: 0;
     bottom: 0;
   }
@@ -181,7 +181,7 @@ const containerMousedown = () => {
         margin: 20px auto;
         width: 1000px;
         height: 1000px;
-        background-color: green;
+        background-color: #f1edec;
         position: relative;
 
         .editor-block::after {
