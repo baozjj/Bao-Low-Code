@@ -1,4 +1,4 @@
-export const useBlockDragger = (focusData) => {
+export const useBlockDragger = (focusData, lastSelectBlock) => {
   let dragState = {
     startX: 0,
     startY: 0,
@@ -20,6 +20,8 @@ export const useBlockDragger = (focusData) => {
   };
 
   const mousedown = (e) => {
+
+    console.log('lastSelectBlock', lastSelectBlock.value)
     dragState = {
       startX: e.clientX,
       startY: e.clientY, // 记录每一个选中的位置

@@ -59,7 +59,7 @@ const {
 });
 
 // 实现组件拖拽
-const { mousedown } = useBlockDragger(focusData);
+const { mousedown } = useBlockDragger(focusData, lastSelectBlock);
 
 // 实现拖拽多个元素
 </script>
