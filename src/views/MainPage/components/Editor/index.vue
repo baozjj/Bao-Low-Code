@@ -59,7 +59,7 @@ const {
 });
 
 // 实现组件拖拽
-const { mousedown } = useBlockDragger(focusData, lastSelectBlock);
+const { mousedown, markLine } = useBlockDragger(focusData, lastSelectBlock, containerRef);
 
 // 实现拖拽多个元素
 </script>
@@ -100,6 +100,8 @@ const { mousedown } = useBlockDragger(focusData, lastSelectBlock);
               :block="item"
             />
           </div>
+          <div v-if="markLine.x !==null" class="line-x" :style="{left: markLine.x+'px'}"></div>
+          <div v-if="markLine.y !==null" class="line-y" :style="{top: markLine.y+'px'}"></div>
         </div>
       </div>
     </div>
@@ -197,6 +199,20 @@ const { mousedown } = useBlockDragger(focusData, lastSelectBlock);
 
         .editor-block-focus {
           border: 1px solid red;
+        }
+
+        .line-x {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          border-left: 1px dashed red;
+        }
+
+        .line-y {
+          position: absolute;
+          left: 0;
+          right: 0;
+          border-top: 1px dashed red;
         }
       }
     }
