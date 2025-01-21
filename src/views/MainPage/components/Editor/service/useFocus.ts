@@ -21,22 +21,31 @@ export const useFocus = (data, callback) => {
     });
   };
 
+  /**
+   * 阻止默认事件和冒泡事件，并根据事件和块的状态处理块的焦点。
+   *
+   * @param e 事件对象
+   * @param block 要处理的块对象
+   */
   const blockMousedown = (e, block) => {
-    // focus 获取焦点后为 true
     e.preventDefault();
     e.stopPropagation();
-
+  
+    const currentFocus = focusData.value.focus;
+  
     if (e.shiftKey) {
-      block.focus = !block.focus;
+      if (currentFocus.length <= 1 || currentFocus.includes(block)) {
+        block.focus = true;
+      } else {
+        block.focus = !block.focus;
+      }
     } else {
       if (!block.focus) {
         clearBlockFocus();
-        block.focus = true; // 要清空其他的 focus 属性
-      } else {
-        block.focus = false;
+        block.focus = true;
       }
     }
-    callback(e)
+    callback(e);
   };
 
   return {
