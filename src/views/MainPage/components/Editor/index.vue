@@ -47,7 +47,13 @@ const containerRef = ref();
 const { dragstart, dragend } = useMenuDragger(containerRef, data);
 
 // 实现获取焦点
-const { blockMousedown, clearBlockFocus, focusData } = useFocus(data, (e) => {
+const {
+  blockMousedown,
+  clearBlockFocus,
+  focusData,
+  containerMousedown,
+  lastSelectBlock,
+} = useFocus(data, (e) => {
   console.log(focusData.value.focus);
   mousedown(e);
 });
@@ -56,10 +62,6 @@ const { blockMousedown, clearBlockFocus, focusData } = useFocus(data, (e) => {
 const { mousedown } = useBlockDragger(focusData);
 
 // 实现拖拽多个元素
-
-const containerMousedown = () => {
-  clearBlockFocus(); // 点击容器让选中的失去焦点
-};
 </script>
 
 <template>
@@ -90,11 +92,11 @@ const containerMousedown = () => {
           ref="containerRef"
           :onMousedown="containerMousedown"
         >
-          <div v-for="item in data.blocks" :key="item.id">
+          <div v-for="(item, index) in data.blocks" :key="item.id">
             <EditorBlock
               :class="item.focus ? 'editor-block-focus' : ''"
               class="editor-block"
-              :onMousedown="(e) => blockMousedown(e, item)"
+              :onMousedown="(e) => blockMousedown(e, item, index)"
               :block="item"
             />
           </div>
